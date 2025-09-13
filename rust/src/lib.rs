@@ -9,6 +9,8 @@ pub mod lua;
 pub mod name_generators;
 pub mod obfuscator;
 pub mod parser;
+pub mod step;
+pub mod steps;
 pub mod pipeline;
 pub mod random_literals;
 pub mod random_strings;
