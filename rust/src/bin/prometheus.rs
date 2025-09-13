@@ -3,7 +3,11 @@ use std::fs;
 use std::path::PathBuf;
 
 use clap::Parser;
-use prometheus_rs::{obfuscate, Config, LuaVersion, load_preset};
+use prometheus_rs::{
+    colors,
+    logger::{Logger, LogLevel},
+    obfuscate, Config, LuaVersion, load_preset,
+};
 
 #[derive(Parser, Debug)]
 #[command(author, version, about = "Prometheus obfuscator CLI")]
@@ -27,6 +31,10 @@ struct Cli {
     #[arg(long)]
     nocolors: bool,
 
+    /// Set log level (error, warn, log, debug)
+    #[arg(long, value_enum, default_value_t = LogLevel::Log)]
+    loglevel: LogLevel,
+
     /// Override Lua version to Lua 5.1
     #[arg(long = "Lua51")]
     lua51: bool,
@@ -46,6 +54,8 @@ struct Cli {
 
 fn main() -> Result<(), Box<dyn Error>> {
     let cli = Cli::parse();
+    colors::set_enabled(!cli.nocolors);
+    let logger = Logger::new(cli.loglevel);
 
     // Load configuration
     let mut config: Config = if let Some(preset) = cli.preset.as_deref() {
@@ -83,6 +93,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     };
 
     fs::write(&out_path, out)?;
-    println!("Wrote output to {}", out_path.display());
+    logger.log(format!("Wrote output to {}", out_path.display()));
     Ok(())
 }

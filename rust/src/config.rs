@@ -1,6 +1,17 @@
 use serde::Deserialize;
 use std::collections::HashMap;
 
+/// Prometheus global configuration constants.
+pub const NAME: &str = "Prometheus";
+pub const REVISION: &str = "Alpha";
+pub const VERSION: &str = "v0.2";
+pub const BY: &str = "levno-710";
+pub const NAME_UPPER: &str = "PROMETHEUS";
+pub const NAME_AND_VERSION: &str = "Prometheus v0.2";
+pub const IDENT_PREFIX: &str = "__prometheus_";
+pub const SPACE: &str = " ";
+pub const TAB: &str = "\t";
+
 #[derive(Debug, Clone, Deserialize)]
 pub struct Config {
     #[serde(rename = "LuaVersion", default)]
@@ -57,4 +68,3 @@ pub fn load_preset(name: &str) -> Option<Config> {
         _ => None,
     }
 }
-
