@@ -8,7 +8,11 @@ use crate::lua::LuaVersion;
 pub fn obfuscate(source: &str) -> String {
     let version = LuaVersion::Lua51;
     let tokens = tokenize(source, version);
-    let _ast = parse(&tokens, version);
+    let result = parse(&tokens, version).expect("failed to parse source");
+    for warning in result.warnings {
+        println!("warning: {}", warning.message);
+    }
+    let _ast = result.ast;
 
     // Future work: apply transformation pipeline and generate obfuscated code.
     unimplemented!("obfuscation pipeline not yet implemented");
