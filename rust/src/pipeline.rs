@@ -4,6 +4,9 @@ use crate::ast::AstNode;
 use crate::config::Config;
 use crate::lexer::tokenize;
 use crate::lua::LuaVersion;
+use crate::name_generators::{
+    ConfuseGenerator, IlGenerator, MangledGenerator, MangledShuffledGenerator, NumberGenerator,
+};
 use crate::parser::parse;
 
 /// Trait for transformation steps in the obfuscation pipeline.
@@ -16,25 +19,6 @@ pub trait Step {
 pub trait NameGenerator {
     /// Generate the next identifier.
     fn generate(&mut self) -> String;
-}
-
-/// Placeholder implementation mimicking the `MangledShuffled` generator from Lua.
-#[derive(Default)]
-pub struct MangledShuffledGenerator {
-    counter: u64,
-}
-
-impl MangledShuffledGenerator {
-    pub fn new() -> Self {
-        Self { counter: 0 }
-    }
-}
-
-impl NameGenerator for MangledShuffledGenerator {
-    fn generate(&mut self) -> String {
-        self.counter += 1;
-        format!("v{}", self.counter)
-    }
 }
 
 /// Factory type used for constructing steps from configuration.
@@ -64,7 +48,7 @@ impl Pipeline {
             pretty_print,
             var_name_prefix,
             seed,
-            name_generator: Box::new(MangledShuffledGenerator::new()),
+            name_generator: Box::new(MangledShuffledGenerator::new(seed)),
             steps: Vec::new(),
             step_constructors: HashMap::new(),
         }
@@ -77,13 +61,16 @@ impl Pipeline {
 
     /// Set the name generator by predefined name.
     pub fn set_name_generator(&mut self, name: &str) -> Result<(), String> {
-        match name {
-            "MangledShuffled" => {
-                self.name_generator = Box::new(MangledShuffledGenerator::new());
-                Ok(())
-            }
-            _ => Err(format!("unknown name generator {name}")),
-        }
+        let seed = self.seed;
+        self.name_generator = match name {
+            "Mangled" => Box::new(MangledGenerator::new()),
+            "MangledShuffled" => Box::new(MangledShuffledGenerator::new(seed)),
+            "Il" => Box::new(IlGenerator::new(seed)),
+            "Confuse" => Box::new(ConfuseGenerator::new(seed)),
+            "Number" => Box::new(NumberGenerator::new()),
+            _ => return Err(format!("unknown name generator {name}")),
+        };
+        Ok(())
     }
 
     /// Construct a pipeline from a [`Config`].
