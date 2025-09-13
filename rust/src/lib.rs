@@ -1,19 +1,21 @@
 //! Scaffold for a Rust port of the Prometheus Lua obfuscator.
 
 pub mod ast;
-pub mod lexer;
-pub mod parser;
-pub mod obfuscator;
-pub mod config;
 pub mod colors;
+pub mod config;
+pub mod lexer;
 pub mod logger;
-pub mod util;
 pub mod lua;
+pub mod obfuscator;
+pub mod parser;
+pub mod pipeline;
+pub mod util;
 
+pub use config::{load_preset, Config};
+pub use logger::{LogLevel, Logger};
+pub use lua::{LuaConventions, LuaVersion};
 pub use obfuscator::obfuscate;
-pub use config::{Config, load_preset};
-pub use lua::{LuaVersion, LuaConventions};
-pub use logger::{Logger, LogLevel};
+pub use pipeline::Pipeline;
 
 #[cfg(test)]
 mod tests {
