@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use crate::ast::AstNode;
 use crate::config::Config;
 use crate::lexer::tokenize;
 use crate::lua::LuaVersion;
@@ -8,21 +7,14 @@ use crate::name_generators::{
     ConfuseGenerator, IlGenerator, MangledGenerator, MangledShuffledGenerator, NumberGenerator,
 };
 use crate::parser::parse;
-
-/// Trait for transformation steps in the obfuscation pipeline.
-pub trait Step {
-    /// Apply the transformation to the AST.
-    fn apply(&mut self, ast: AstNode, pipeline: &Pipeline) -> AstNode;
-}
+use crate::step::{Step, StepConstructor};
+use crate::steps;
 
 /// Trait for variable name generators.
 pub trait NameGenerator {
     /// Generate the next identifier.
     fn generate(&mut self) -> String;
 }
-
-/// Factory type used for constructing steps from configuration.
-pub type StepConstructor = fn(&HashMap<String, serde_json::Value>) -> Box<dyn Step>;
 
 /// Orchestrates parsing, running transformation steps and emitting code.
 pub struct Pipeline {
@@ -43,7 +35,7 @@ impl Pipeline {
         var_name_prefix: String,
         seed: u64,
     ) -> Self {
-        Self {
+        let mut pipeline = Self {
             lua_version,
             pretty_print,
             var_name_prefix,
@@ -51,7 +43,10 @@ impl Pipeline {
             name_generator: Box::new(MangledShuffledGenerator::new(seed)),
             steps: Vec::new(),
             step_constructors: HashMap::new(),
-        }
+        };
+        // Register built-in steps so they can be referenced from configuration.
+        steps::register_builtin_steps(&mut pipeline);
+        pipeline
     }
 
     /// Register a step constructor that can later be referenced by name in [`Config`].
