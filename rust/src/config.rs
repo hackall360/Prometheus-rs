@@ -1,5 +1,6 @@
 use serde::Deserialize;
 use std::collections::HashMap;
+use crate::lua::LuaVersion;
 
 /// Prometheus global configuration constants.
 pub const NAME: &str = "Prometheus";
@@ -36,17 +37,6 @@ pub struct Step {
     pub settings: HashMap<String, serde_json::Value>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
-pub enum LuaVersion {
-    Lua51,
-    LuaU,
-}
-
-impl Default for LuaVersion {
-    fn default() -> Self {
-        LuaVersion::Lua51
-    }
-}
 
 impl Default for Config {
     fn default() -> Self {
