@@ -2,7 +2,7 @@
 name = "prometheus-rs"
 version = "0.1.0"
 edition = "2024"
-description = "Scaffold for a Rust port of the Prometheus Lua obfuscator"
+description = "Rust implementation of the Prometheus Lua obfuscator"
 license = "AGPL-3.0-only"
 
 [dependencies]
