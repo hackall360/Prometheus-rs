@@ -3,6 +3,18 @@ mod common;
 
 #[test]
 fn closures_program() {
-    let code = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../tests/closures.lua"));
+    let code = r#"local arr = {}
+for i = 1, 100 do
+        local x;
+        x = (x or 1) + i;
+        arr[i] = function()
+                return x;
+        end
+end
+
+for i, func in ipairs(arr) do
+        print(func())
+end
+"#;
     common::assert_equivalent(code);
 }

@@ -20,8 +20,3 @@
 * [EncryptStrings](steps/encryptstrings.md)
 * [ConstantArray](steps/constantarray.md)
 * [AntiTamper](steps/anti-tamper.md)
-
-
-## advanced
-
-* [Using Prometheus in your Lua Application](advanced/using-prometheus-in-your-lua-application.md)
